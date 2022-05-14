@@ -1,5 +1,7 @@
+import { message } from 'antd';
 import type { NextPage } from 'next';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { useRequest } from 'service/fetch';
 import CountDown from '../CountDown';
 
 import styles from './index.module.scss';
@@ -10,7 +12,15 @@ interface IProps {
 }
 
 const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
+  const [isCounting, setIsCounting] = useState(false);
   const [form, setForm] = useState({ phone: '', verify: '' });
+  const [shouldFetchCode, setShouldFetchCode] = useState(false);
+  const { data } = useRequest(
+    shouldFetchCode ? '/api/user/sendVerifyCode' : null
+  );
+  useEffect(() => {
+    console.log('data', data);
+  });
 
   const handleLogin = () => {};
 
@@ -19,6 +29,24 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
   const handleFormChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
+  };
+
+  const startCountDown = () => {
+    setIsCounting(true);
+  };
+
+  const endCountDown = () => {
+    setIsCounting(false);
+  };
+
+  // 获取验证码
+  const getVerifyCode = () => {
+    if (!form.phone) {
+      message.warning('请输入正确的手机号');
+      return;
+    }
+    startCountDown();
+    setShouldFetchCode(true);
   };
 
   return isShow ? (
@@ -45,7 +73,15 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
             value={form.verify}
             onChange={handleFormChange}
           />
-          <CountDown time={3} />
+          <div className={styles['count-down-area']}>
+            {isCounting ? (
+              <CountDown time={3} endCountDown={endCountDown} />
+            ) : (
+              <span className={styles['verify-code']} onClick={getVerifyCode}>
+                获取验证码
+              </span>
+            )}
+          </div>
         </div>
         <div className={styles['login-btn']} onClick={handleLogin}>
           登录

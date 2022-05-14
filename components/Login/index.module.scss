@@ -51,6 +51,17 @@
     .verify-code-area {
       position: relative;
       cursor: pointer;
+
+      .count-down-area {
+        position: absolute;
+        right: 20px;
+        top: 8px;
+      }
+
+      .verify-code {
+        color: #1e80ff;
+        font-size: 14px;
+      }
     }
 
     .login-btn {
