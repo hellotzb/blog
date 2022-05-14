@@ -1,7 +1,7 @@
 import { message } from 'antd';
 import type { NextPage } from 'next';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { useRequest } from 'service/fetch';
+import useSWR from 'swr';
 import CountDown from '../CountDown';
 
 import styles from './index.module.scss';
@@ -15,12 +15,10 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
   const [isCounting, setIsCounting] = useState(false);
   const [form, setForm] = useState({ phone: '', verify: '' });
   const [shouldFetchCode, setShouldFetchCode] = useState(false);
-  const { data } = useRequest(
-    shouldFetchCode ? '/api/user/sendVerifyCode' : null
-  );
+  const { data } = useSWR(shouldFetchCode ? '/api/user/sendVerifyCode' : null);
   useEffect(() => {
     console.log('data', data);
-  });
+  }, [data]);
 
   const handleLogin = () => {};
 
@@ -41,6 +39,7 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
 
   // 获取验证码
   const getVerifyCode = () => {
+    // TODO: 校验手机号(/^(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/)
     if (!form.phone) {
       message.warning('请输入正确的手机号');
       return;
