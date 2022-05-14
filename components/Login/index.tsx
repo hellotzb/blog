@@ -1,4 +1,5 @@
 import { message } from 'antd';
+import axios from 'axios';
 import type { NextPage } from 'next';
 import { ChangeEvent, useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -15,10 +16,30 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
   const [isCounting, setIsCounting] = useState(false);
   const [form, setForm] = useState({ phone: '', verify: '' });
   const [shouldFetchCode, setShouldFetchCode] = useState(false);
-  const { data } = useSWR(shouldFetchCode ? '/api/user/sendVerifyCode' : null);
+  const { data, error } = useSWR(
+    shouldFetchCode
+      ? {
+          url: '/api/user/sendVerifyCode',
+          data: {
+            to: form?.phone,
+            templateId: '1',
+          },
+        }
+      : null,
+    ({ url, data }) =>
+      axios
+        .post(url, data)
+        .then((res) => res.data)
+        .finally(() => setShouldFetchCode(false))
+  );
+
   useEffect(() => {
     console.log('data', data);
-  }, [data]);
+    console.log('error', error);
+    if (error) {
+      message.error(error.msg ?? '未知错误');
+    }
+  }, [data, error]);
 
   const handleLogin = () => {};
 
@@ -39,8 +60,8 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
 
   // 获取验证码
   const getVerifyCode = () => {
-    // TODO: 校验手机号(/^(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/)
-    if (!form.phone) {
+    const reg = /^(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
+    if (!reg.test(form.phone)) {
       message.warning('请输入正确的手机号');
       return;
     }
@@ -74,7 +95,7 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
           />
           <div className={styles['count-down-area']}>
             {isCounting ? (
-              <CountDown time={3} endCountDown={endCountDown} />
+              <CountDown time={10} endCountDown={endCountDown} />
             ) : (
               <span className={styles['verify-code']} onClick={getVerifyCode}>
                 获取验证码
