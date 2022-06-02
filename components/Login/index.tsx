@@ -1,8 +1,7 @@
 import { message } from 'antd';
 import axios from 'axios';
 import type { NextPage } from 'next';
-import { ChangeEvent, useEffect, useState } from 'react';
-import useSWR from 'swr';
+import { ChangeEvent, useState } from 'react';
 import CountDown from '../CountDown';
 
 import styles from './index.module.scss';
@@ -15,32 +14,6 @@ interface IProps {
 const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
   const [isCounting, setIsCounting] = useState(false);
   const [form, setForm] = useState({ phone: '', verify: '' });
-  const [shouldFetchCode, setShouldFetchCode] = useState(false);
-  const { data, error } = useSWR(
-    shouldFetchCode
-      ? {
-          url: '/api/user/sendVerifyCode',
-          data: {
-            to: form?.phone,
-            templateId: '1',
-          },
-        }
-      : null,
-    ({ url, data }) =>
-      axios
-        .post(url, data)
-        .then((res) => res.data)
-        .finally(() => setShouldFetchCode(false))
-  );
-
-  useEffect(() => {
-    console.log('data', data);
-    console.log('error', error);
-    if (error) {
-      message.error(error.msg ?? '未知错误');
-    }
-  }, [data, error]);
-
   const handleLogin = () => {};
 
   const handleOAuthLogin = () => {};
@@ -66,7 +39,19 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
       return;
     }
     startCountDown();
-    setShouldFetchCode(true);
+    axios
+      .post('/api/user/sendVerifyCode', {
+        to: form?.phone,
+        templateId: '1',
+      })
+      .then((res) => {
+        if (res.data?.msg) {
+          message.error(res.data.msg);
+        }
+      })
+      .catch((err) => {
+        message.error(err.msg || '未知错误');
+      });
   };
 
   return isShow ? (
@@ -95,7 +80,7 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
           />
           <div className={styles['count-down-area']}>
             {isCounting ? (
-              <CountDown time={10} endCountDown={endCountDown} />
+              <CountDown time={60} endCountDown={endCountDown} />
             ) : (
               <span className={styles['verify-code']} onClick={getVerifyCode}>
                 获取验证码
