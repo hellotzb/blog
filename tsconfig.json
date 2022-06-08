@@ -18,8 +18,11 @@
     "paths": {
       "@/components/*": ["components/*"],
       "@/pages/*": ["pages/*"],
-      "@/public/*": ["public/*"]
-    }
+      "@/public/*": ["public/*"],
+      "@/db/*": ["db/*"],
+    },
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

@@ -1,11 +1,13 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { withIronSessionApiRoute } from 'iron-session/next';
 import { format } from 'date-fns';
 import md5 from 'md5';
 import { encode } from 'js-base64';
-import { withIronSessionApiRoute } from 'iron-session/next';
+import { AppDataSource } from '@/db/data-source';
 import myAxios from 'service/fetch';
 import { ironOptions } from 'config';
 import { ISession } from '../index';
+import { User } from '@/db/entity/User';
 
 interface ResData {
   code: number;
@@ -21,6 +23,16 @@ async function sendVerifyCode(
   req: NextApiRequest,
   res: NextApiResponse<ResData>
 ) {
+  try {
+    await AppDataSource.initialize();
+    const userRepository = AppDataSource.getRepository(User);
+
+    const users = await userRepository.find();
+    console.log('allUsers', users);
+  } catch (error) {
+    console.log('添加数据失败', error);
+  }
+
   const session: ISession = req.session; // 被withIronSessionApiRoute包括会生成一个session对象
   const now = format(new Date(), 'yyyyMMddHHmmss');
   const { to = '', templateId = '1' } = req.body;
@@ -28,6 +40,8 @@ async function sendVerifyCode(
   const verifyCode = Math.floor(Math.random() * (9999 - 1000)) + 1000;
   const expire = '5'; // 单位：分钟
 
+  // 容联云通讯-短信平台接口
+  // http://doc.yuntongxun.com/pe/5a533de33b8496dd00dce07c
   const SigParameter = md5(`${ACCOUNT_ID}${AUTH_TOKEN}${now}`).toUpperCase();
   const Authorization = encode(`${ACCOUNT_ID}:${now}`);
   const URL: string = `https://app.cloopen.com:8883/2013-12-26/Accounts/${ACCOUNT_ID}/SMS/TemplateSMS?sig=${SigParameter}`;

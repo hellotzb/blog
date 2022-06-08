@@ -1,8 +1,8 @@
 import { message } from 'antd';
-import axios from 'axios';
 import type { NextPage } from 'next';
 import { ChangeEvent, useState } from 'react';
 import CountDown from '../CountDown';
+import request from 'service/fetch';
 
 import styles from './index.module.scss';
 
@@ -14,7 +14,22 @@ interface IProps {
 const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
   const [isCounting, setIsCounting] = useState(false);
   const [form, setForm] = useState({ phone: '', verify: '' });
-  const handleLogin = () => {};
+
+  const handleLogin = () => {
+    request
+      .post('/api/user/login', {
+        ...form,
+      })
+      .then((res: any) => {
+        if (res?.code === 0) {
+          // 登录成功
+
+          onClose?.();
+        } else {
+          message.error(res?.msg || '未知错误');
+        }
+      });
+  };
 
   const handleOAuthLogin = () => {};
 
@@ -39,7 +54,7 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
       return;
     }
     startCountDown();
-    axios
+    request
       .post('/api/user/sendVerifyCode', {
         to: form?.phone,
         templateId: '1',
