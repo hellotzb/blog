@@ -10,17 +10,17 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  nickname: string;
+  nickname!: string;
 
   @Column()
-  avatar: string;
+  avatar!: string;
 
   @Column()
-  job: string;
+  job!: string;
 
   @Column()
-  introduce: string;
+  introduce!: string;
 }

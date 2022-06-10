@@ -19,6 +19,7 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
     request
       .post('/api/user/login', {
         ...form,
+        identity_type: 'phone', // 登录方式：手机号
       })
       .then((res: any) => {
         if (res?.code === 0) {
@@ -60,8 +61,8 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
         templateId: '1',
       })
       .then((res) => {
-        if (res.data?.msg) {
-          message.error(res.data.msg);
+        if (res.data?.code === -1) {
+          message.error(res.data?.msg || '未知错误');
         }
       })
       .catch((err) => {

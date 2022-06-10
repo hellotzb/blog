@@ -3,11 +3,9 @@ import { withIronSessionApiRoute } from 'iron-session/next';
 import { format } from 'date-fns';
 import md5 from 'md5';
 import { encode } from 'js-base64';
-import { AppDataSource } from '@/db/data-source';
 import myAxios from 'service/fetch';
 import { ironOptions } from 'config';
 import { ISession } from '../index';
-import { User } from '@/db/entity/User';
 
 interface ResData {
   code: number;
@@ -23,16 +21,6 @@ async function sendVerifyCode(
   req: NextApiRequest,
   res: NextApiResponse<ResData>
 ) {
-  try {
-    await AppDataSource.initialize();
-    const userRepository = AppDataSource.getRepository(User);
-
-    const users = await userRepository.find();
-    console.log('allUsers', users);
-  } catch (error) {
-    console.log('添加数据失败', error);
-  }
-
   const session: ISession = req.session; // 被withIronSessionApiRoute包括会生成一个session对象
   const now = format(new Date(), 'yyyyMMddHHmmss');
   const { to = '', templateId = '1' } = req.body;
@@ -69,7 +57,7 @@ async function sendVerifyCode(
       data: templateSMS,
     });
   } else {
-    res.status(200).json({ code: statusCode, msg: statusMsg });
+    res.status(200).json({ code: -1, msg: statusMsg });
   }
 }
 
