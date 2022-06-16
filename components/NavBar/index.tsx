@@ -1,9 +1,11 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Button } from 'antd';
+import { Avatar, Button, Dropdown, Menu } from 'antd';
+import { LoginOutlined, HomeOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import Login from '../Login';
+import { useStore } from '@/pages/_app';
 
 import styles from './index.module.scss';
 
@@ -30,6 +32,8 @@ const navs: Navs[] = [
 const NavBar: NextPage = () => {
   const [isShowLogin, setIsShowLogin] = useState(false);
   const { pathname } = useRouter();
+  const store = useStore();
+  const { userId, avatar } = store.user.userInfo;
 
   const toEditor = () => {};
 
@@ -39,6 +43,21 @@ const NavBar: NextPage = () => {
 
   const handleClose = () => {
     setIsShowLogin(false);
+  };
+
+  const renderDropdown = () => {
+    return (
+      <Menu>
+        <Menu.Item>
+          <HomeOutlined />
+          &nbsp;个人主页
+        </Menu.Item>
+        <Menu.Item>
+          <LoginOutlined />
+          &nbsp;退出
+        </Menu.Item>
+      </Menu>
+    );
   };
 
   return (
@@ -55,9 +74,18 @@ const NavBar: NextPage = () => {
       </section>
       <section className={styles['operate-area']}>
         <Button onClick={toEditor}>写文章</Button>
-        <Button type="primary" onClick={handleLogin}>
-          登陆
-        </Button>
+        {/* 检查登录态 */}
+        {userId ? (
+          <>
+            <Dropdown overlay={renderDropdown} placement="bottomLeft">
+              <Avatar src={avatar} size={32} />
+            </Dropdown>
+          </>
+        ) : (
+          <Button type="primary" onClick={handleLogin}>
+            登陆
+          </Button>
+        )}
       </section>
       <Login isShow={isShowLogin} onClose={handleClose} />
     </div>

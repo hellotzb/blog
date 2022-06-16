@@ -3,6 +3,7 @@ import type { NextPage } from 'next';
 import { ChangeEvent, useState } from 'react';
 import CountDown from '../CountDown';
 import request from 'service/fetch';
+import { useStore } from '@/pages/_app';
 
 import styles from './index.module.scss';
 
@@ -14,6 +15,7 @@ interface IProps {
 const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
   const [isCounting, setIsCounting] = useState(false);
   const [form, setForm] = useState({ phone: '', verify: '' });
+  const store = useStore();
 
   const handleLogin = () => {
     request
@@ -23,8 +25,8 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
       })
       .then((res: any) => {
         if (res?.code === 0) {
-          // 登录成功
-
+          // 登录成功，全局存储用户信息
+          store.user.setUserInfo(res?.data);
           onClose?.();
         } else {
           message.error(res?.msg || '未知错误');
