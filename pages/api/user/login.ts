@@ -1,12 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withIronSessionApiRoute } from 'iron-session/next';
-import { ironOptions } from 'config';
+import { defaultUserAvatar, ironOptions } from 'config';
 import { ISession } from '..';
 import { AppDataSource } from '@/db/data-source';
 import { UserAuths, User } from '@/db/entity';
+import { setCookies } from 'utils';
+import { Cookie } from 'next-cookie';
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session; // 被withIronSessionApiRoute包括会生成一个session对象
+  const cookies = Cookie.fromApiRoute(req, res);
   const { phone = '', verify = '', identity_type = 'phone' } = req.body;
   await AppDataSource.initialize();
   const userAuthsRepo = await AppDataSource.getRepository(UserAuths);
@@ -30,12 +33,12 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       const { id, nickname, avatar } = user;
       session.user = { id, nickname, avatar };
       await session.save();
+      setCookies(cookies, { user: { id, nickname, avatar } });
     } else {
       // 没有查找到记录, 创建一条记录
       const user = new User();
       user.nickname = `用户_${Math.floor(Math.random() * 10000)}`;
-      user.avatar =
-        'https://img3.doubanio.com/view/richtext/large/public/p206989230.jpg';
+      user.avatar = defaultUserAvatar;
       user.job = '暂无';
       user.introduce = '暂无';
 
@@ -52,6 +55,7 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       } = userAuthResponse;
       session.user = { id, nickname, avatar };
       await session.save();
+      setCookies(cookies, { user: { id, nickname, avatar } });
     }
     // 验证码校验成功
     res.status(200).json({

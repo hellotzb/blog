@@ -37,9 +37,13 @@ const StoreProvider: React.FC<IProps> = ({ initialValue, children }) => {
   );
 };
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({
+  Component,
+  pageProps,
+  initialValue,
+}: AppProps & { initialValue: Record<any, any> }) {
   return (
-    <StoreProvider initialValue={{ user: {} }}>
+    <StoreProvider initialValue={initialValue}>
       <SWRConfig value={options}>
         <Layout>
           <Component {...pageProps} />
@@ -48,5 +52,21 @@ function MyApp({ Component, pageProps }: AppProps) {
     </StoreProvider>
   );
 }
+
+MyApp.getInitialProps = async ({ ctx }: any) => {
+  const cookies = ctx?.req.cookies || {};
+  let userInfo = {};
+  try {
+    userInfo = JSON.parse(cookies.blogUser);
+  } catch (error) {
+    console.log(error);
+  }
+
+  return {
+    initialValue: {
+      user: { userInfo },
+    },
+  };
+};
 
 export default MyApp;

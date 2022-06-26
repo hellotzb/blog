@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import md5 from 'md5';
 import { encode } from 'js-base64';
 import myAxios from 'service/fetch';
-import { ironOptions } from 'config';
+import { ironOptions, verifyCodeExpires } from 'config';
 import { ISession } from '../index';
 
 interface ResData {
@@ -26,7 +26,6 @@ async function sendVerifyCode(
   const { to = '', templateId = '1' } = req.body;
   // 生成1000 - 9999随机验证码
   const verifyCode = Math.floor(Math.random() * (9999 - 1000)) + 1000;
-  const expire = '5'; // 单位：分钟
 
   // 容联云通讯-短信平台接口
   // http://doc.yuntongxun.com/pe/5a533de33b8496dd00dce07c
@@ -40,7 +39,7 @@ async function sendVerifyCode(
       to,
       templateId,
       appId: APP_ID,
-      datas: [verifyCode, expire],
+      datas: [verifyCode, verifyCodeExpires],
     },
     {
       headers: {

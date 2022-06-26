@@ -33,7 +33,8 @@ const NavBar: NextPage = () => {
   const [isShowLogin, setIsShowLogin] = useState(false);
   const { pathname } = useRouter();
   const store = useStore();
-  const { userId, avatar } = store.user.userInfo;
+  const { id: userId, avatar } = store.user.userInfo;
+  console.log('userInfo', store.user.userInfo);
 
   const toEditor = () => {};
 
