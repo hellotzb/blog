@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import type { NextPage } from 'next';
 import { ChangeEvent, useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import CountDown from '../CountDown';
 import request from 'service/fetch';
 import { useStore } from '@/pages/_app';
@@ -128,4 +129,4 @@ const Login: NextPage<IProps> = ({ isShow = false, onClose }) => {
   ) : null;
 };
 
-export default Login;
+export default observer(Login);

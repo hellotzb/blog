@@ -18,7 +18,7 @@ const options = {
 };
 
 // 如果 observer 是服务器渲染的 rendering context；请确保调用 enableStaticRendering(true)， 这样 observer 将不会订阅任何可观察对象， 并且就不会有 GC 问题产生了。
-enableStaticRendering(true);
+enableStaticRendering(!process.browser);
 
 const StoreContext = createContext({});
 
@@ -53,6 +53,7 @@ function MyApp({
   );
 }
 
+// 从cookies获取userInfo设置登录态
 MyApp.getInitialProps = async ({ ctx }: any) => {
   const cookies = ctx?.req.cookies || {};
   let userInfo = {};
