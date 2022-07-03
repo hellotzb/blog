@@ -42,23 +42,33 @@ function MyApp({
   pageProps,
   initialValue,
 }: AppProps & { initialValue: Record<any, any> }) {
-  return (
-    <StoreProvider initialValue={initialValue}>
-      <SWRConfig value={options}>
+  const renderLayout = () => {
+    // Component.layout为自定义属性，用于区分是否需要渲染Layout
+    if (Component.layout === null) {
+      return <Component {...pageProps} />;
+    } else {
+      return (
         <Layout>
           <Component {...pageProps} />
         </Layout>
-      </SWRConfig>
+      );
+    }
+  };
+  return (
+    <StoreProvider initialValue={initialValue}>
+      <SWRConfig value={options}>{renderLayout()}</SWRConfig>
     </StoreProvider>
   );
 }
 
 // 从cookies获取userInfo设置登录态
 MyApp.getInitialProps = async ({ ctx }: any) => {
-  const cookies = ctx?.req.cookies || {};
+  const cookies = ctx?.req?.cookies || {};
   let userInfo = {};
+  console.log('cookies.blogUser', cookies.blogUser);
+
   try {
-    userInfo = JSON.parse(cookies.blogUser);
+    userInfo = JSON.parse(cookies.blogUser || '{}');
   } catch (error) {
     console.log(error);
   }

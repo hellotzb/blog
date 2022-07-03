@@ -12,8 +12,8 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
   const cookies = Cookie.fromApiRoute(req, res);
   const { phone = '', verify = '', identity_type = 'phone' } = req.body;
   await AppDataSource.initialize();
-  const userAuthsRepo = await AppDataSource.getRepository(UserAuths);
-  await AppDataSource.getRepository(User);
+  const userAuthsRepo = AppDataSource.getRepository(UserAuths);
+  AppDataSource.getRepository(User);
 
   if (String(session.verifyCode) === String(verify)) {
     // 验证码校验成功, 在user_auths表中查找identity_type是否有记录

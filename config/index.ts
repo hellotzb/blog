@@ -3,6 +3,17 @@
  * success: 0
  * error: -1
  */
+export const EXCEPTION_USER = {
+  PUBLISH_FAIL: {
+    code: 1,
+  },
+};
+export const EXCEPTION_ARTICLE = {
+  PUBLISH_FAIL: {
+    code: 2001,
+    msg: '发布文章失败',
+  },
+};
 
 export const ironOptions = {
   cookieName: process.env.SESSION_COOKIE_NAME as string,
@@ -16,7 +27,7 @@ export const ironOptions = {
 
 export const cookieExpires = 1000 * 60 * 60 * 24; // 24 hours
 
-export const verifyCodeExpires = '5'; // 单位：分钟
+export const verifyCodeExpires = '5'; // 验证码过期时间，单位：分钟
 
 export const defaultUserAvatar =
   'https://img.51miz.com/Element/00/88/82/33/f95ce822_E888233_91015ccc.png';

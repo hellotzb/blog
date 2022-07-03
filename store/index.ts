@@ -4,7 +4,7 @@ export interface IStore {
   user: IUser;
 }
 
-export default function createStore(initialValue): () => IStore {
+export default function createStore(initialValue: IStore) {
   return () => ({
     user: { ...user(), ...initialValue?.user },
   });

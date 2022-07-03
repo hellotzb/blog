@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Avatar, Button, Dropdown, Menu, MenuProps } from 'antd';
+import { Avatar, Button, Dropdown, Menu, MenuProps, message } from 'antd';
 import { observer } from 'mobx-react-lite';
 import { LoginOutlined, HomeOutlined } from '@ant-design/icons';
 import { useState } from 'react';
@@ -46,15 +46,22 @@ const menuItems = [
 
 const NavBar: NextPage = () => {
   const [isShowLogin, setIsShowLogin] = useState(false);
-  const { pathname } = useRouter();
+  const { pathname, push } = useRouter();
   const store = useStore();
   const { id: userId, avatar } = store.user.userInfo;
-  console.log('userInfo', store.user.userInfo);
 
   // 跳转主页
-  const toHome = () => {};
+  const toHome = () => {
+    push(`/user/${userId}`);
+  };
 
-  const toEditor = () => {};
+  const toEditor = () => {
+    if (userId) {
+      push('/editor/new');
+    } else {
+      message.warning('请先登录');
+    }
+  };
 
   const handleLogin = () => {
     setIsShowLogin(true);
