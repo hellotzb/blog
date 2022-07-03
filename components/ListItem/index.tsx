@@ -2,6 +2,7 @@ import { IArticle } from '@/pages/api';
 import { EyeOutlined } from '@ant-design/icons';
 import { Avatar } from 'antd';
 import { formatDistanceToNow } from 'date-fns';
+import markdownToTxt from 'markdown-to-txt';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 
@@ -25,8 +26,7 @@ const ListItem: NextPage<IProps> = (props) => {
             </span>
           </div>
           <h4 className={styles.title}>{article?.title}</h4>
-          {/* <p className={styles.content}>{markdownToTxt(article?.content)}</p> */}
-          <p className={styles.content}>{article?.content}</p>
+          <p className={styles.content}>{markdownToTxt(article?.content)}</p>
           <div className={styles.statistics}>
             <EyeOutlined />
             <span className={styles.item}>{article?.views}</span>
