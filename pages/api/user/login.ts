@@ -11,7 +11,9 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session; // 被withIronSessionApiRoute包括会生成一个session对象
   const cookies = Cookie.fromApiRoute(req, res);
   const { phone = '', verify = '', identity_type = 'phone' } = req.body;
-  await AppDataSource.initialize();
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+  }
   const userAuthsRepo = AppDataSource.getRepository(UserAuths);
   AppDataSource.getRepository(User);
 

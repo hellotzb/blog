@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { User, UserAuths, Article, Comment } from './entity';
+import { User, UserAuths, Article, Comment, Tag } from './entity';
 
 const host = process.env.DATABASE_HOST;
 const port = Number(process.env.DATABASE_PORT);
@@ -17,7 +17,7 @@ export const AppDataSource = new DataSource({
   database,
   synchronize: true, // 设置synchronize可确保每次运行应用程序时实体都将与数据库同步。
   logging: false,
-  entities: [User, UserAuths, Article, Comment],
+  entities: [User, UserAuths, Article, Comment, Tag],
   // entities: ['@/db/entity/*.ts'],
   migrations: [],
   subscribers: [],

@@ -8,7 +8,9 @@ import { Article, User, Comment } from '@/db/entity';
 async function publish(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session; // 被withIronSessionApiRoute包括会生成一个session对象
   const { articleId = 0, content = '' } = req.body;
-  await AppDataSource.initialize();
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+  }
   const userRepo = AppDataSource.getRepository(User);
   const articleRepo = AppDataSource.getRepository(Article);
   const commentRepo = AppDataSource.getRepository(Comment);

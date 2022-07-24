@@ -6,7 +6,9 @@ import { Article } from '@/db/entity';
 async function update(req: NextApiRequest, res: NextApiResponse) {
   const { title = '', content = '', id = 0 } = req.body;
 
-  await AppDataSource.initialize();
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+  }
   const articleRepo = AppDataSource.getRepository(Article);
   const article = await articleRepo.findOne({
     where: {
