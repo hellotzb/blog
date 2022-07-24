@@ -11,24 +11,17 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  OneToMany,
 } from 'typeorm';
+import { Article } from './Article';
 import { User } from './User';
-import { Comment } from './Comment';
 
-@Entity({ name: 'articles' })
-export class Article {
+@Entity({ name: 'comments' })
+export class Comment {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column()
-  title!: string;
-
-  @Column()
   content!: string;
-
-  @Column()
-  views!: number;
 
   @Column()
   create_time!: Date;
@@ -36,17 +29,13 @@ export class Article {
   @Column()
   update_time!: Date;
 
-  @Column()
-  is_delete!: number;
-
-  // 多篇文章可以关联一个用户，多对一
-  @ManyToOne((type) => User, {
-    cascade: true, // 为给定关系设置级联选项，true表示允许在数据库中插入或更新相关对象
-  })
+  // 多个评论可以关联一个用户，多对一
+  @ManyToOne((type) => User)
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  // 一篇文章可以关联多条评论，一对多
-  @OneToMany((type) => Comment, (comment) => comment.article)
-  comments!: Comment[];
+  // 多个评论可以关联一个篇文章，多对一
+  @ManyToOne((type) => Article)
+  @JoinColumn({ name: 'article_id' })
+  article!: Article;
 }

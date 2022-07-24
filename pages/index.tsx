@@ -31,9 +31,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 const Home: NextPage<IProps> = (props) => {
   const { articles = [] } = props;
-  console.log('client-articles', articles);
   return (
-    <div className={styles['content-layout']}>
+    <div className="content-layout">
       {articles?.map((article) => (
         <div key={article.id}>
           <ListItem article={article} />

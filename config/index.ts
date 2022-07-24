@@ -22,6 +22,12 @@ export const EXCEPTION_ARTICLE = {
     msg: '未找到文章',
   },
 };
+export const EXCEPTION_COMMENT = {
+  PUBLISH_FAIL: {
+    code: 4001,
+    msg: '发布文评论失败',
+  },
+};
 
 export const ironOptions = {
   cookieName: process.env.SESSION_COOKIE_NAME as string,
