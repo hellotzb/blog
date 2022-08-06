@@ -3,21 +3,26 @@ import { withIronSessionApiRoute } from 'iron-session/next';
 import { EXCEPTION_ARTICLE, ironOptions } from 'config';
 import { ISession } from '..';
 import { AppDataSource } from '@/db/data-source';
-import { Article, User } from '@/db/entity';
+import { Article, Tag, User } from '@/db/entity';
 
 async function publish(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session; // 被withIronSessionApiRoute包括会生成一个session对象
-  const { title = '', content = '' } = req.body;
+  const { title = '', content = '', tagIds = [] } = req.body;
   if (!AppDataSource.isInitialized) {
     await AppDataSource.initialize();
   }
   const userRepo = AppDataSource.getRepository(User);
   const articleRepo = AppDataSource.getRepository(Article);
+  const tagRepo = AppDataSource.getRepository(Tag);
 
   const user = await userRepo.findOne({
     where: {
       id: session?.user?.id,
     },
+  });
+
+  const tags = await tagRepo.find({
+    where: tagIds?.map((tagId: number) => ({ id: tagId })),
   });
 
   const article = new Article();
@@ -31,6 +36,15 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
   if (user) {
     article.user = user;
   }
+
+  if (tags) {
+    const newTags = tags?.map((tag) => {
+      tag.article_count = tag?.article_count + 1;
+      return tag;
+    });
+    article.tags = newTags;
+  }
+
   try {
     const resArticle = await articleRepo.save(article);
     if (resArticle) {

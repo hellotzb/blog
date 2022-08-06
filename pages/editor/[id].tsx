@@ -2,14 +2,14 @@ import type { GetServerSideProps, NextPage } from 'next';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
 import dynamic from 'next/dynamic';
-import { ChangeEvent, useState } from 'react';
-import { Button, Input, message } from 'antd';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { Button, Input, message, Select } from 'antd';
 import request from 'service/fetch';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from 'next/router';
 import { AppDataSource } from '@/db/data-source';
 import { Article } from '@/db/entity';
-import { IArticle } from '../api';
+import { IArticle, ITag } from '../api';
 
 import styles from './index.module.scss';
 
@@ -33,6 +33,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
     relations: {
       user: true, // 返回值关联users表
+      tags: true, // 返回值关联tag表
     },
   });
 
@@ -42,10 +43,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const ModifyEditor: NextPage<IProps> = ({ article }) => {
+  const defaultTagIds = article?.tags?.map((tag) => tag.id) || [];
   const [content, setContent] = useState(article?.content || '');
   const [title, setTitle] = useState(article?.title || '');
+  const [tagIds, setTagIds] = useState(defaultTagIds);
+  const [allTags, setAllTags] = useState<ITag[]>([]);
   const { query, push } = useRouter();
   const articleId = Number(query?.id);
+
+  useEffect(() => {
+    request.get('/api/tag/get').then((res: any) => {
+      if (res?.code === 0) {
+        setAllTags(res?.data?.allTags || []);
+      }
+    });
+  }, []);
 
   const handlePublish = () => {
     if (!title) {
@@ -56,6 +68,7 @@ const ModifyEditor: NextPage<IProps> = ({ article }) => {
           id: articleId,
           title,
           content,
+          tagIds,
         })
         .then((res: any) => {
           if (res?.code === 0) {
@@ -76,6 +89,13 @@ const ModifyEditor: NextPage<IProps> = ({ article }) => {
     setContent(content!);
   };
 
+  const handleSelectTag = (value: []) => {
+    const tagIds = value.map(
+      (item) => allTags?.find((tag) => tag.title === item)?.id as number
+    );
+    setTagIds(tagIds);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.operation}>
@@ -85,6 +105,18 @@ const ModifyEditor: NextPage<IProps> = ({ article }) => {
           value={title}
           onChange={handleTitleChange}
         />
+        <Select
+          className={styles.tag}
+          mode="multiple"
+          allowClear
+          placeholder="请选择标签"
+          defaultValue={article?.tags?.map((tag) => tag.title) as []}
+          onChange={handleSelectTag}
+        >
+          {allTags?.map((tag: any) => (
+            <Select.Option key={tag?.title}>{tag?.title}</Select.Option>
+          ))}
+        </Select>
         <Button
           className={styles.button}
           type="primary"

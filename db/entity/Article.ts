@@ -12,9 +12,11 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { User } from './User';
 import { Comment } from './Comment';
+import { Tag } from './Tag';
 
 @Entity({ name: 'articles' })
 export class Article {
@@ -45,6 +47,13 @@ export class Article {
   })
   @JoinColumn({ name: 'user_id' })
   user!: User;
+
+  // 一篇文章可以关联多个标签，同时一个标签也可以关联多篇文章，多对多
+  // 多对多的关系不能通过在一个表里设置外键，需要新建一张关联表，默认表名为tags_articles_articles
+  @ManyToMany((type) => Tag, (tag) => tag.articles, {
+    cascade: true,
+  })
+  tags!: Tag[];
 
   // 一篇文章可以关联多条评论，一对多
   @OneToMany((type) => Comment, (comment) => comment.article)

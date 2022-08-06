@@ -5,11 +5,15 @@
     display: flex;
 
     .title {
-      width: 95%;
+      width: 80%;
+    }
+
+    .tag {
+      width: 15%;
     }
 
     .button {
-      width: 5%
+      width: 5%;
     }
   }
 }

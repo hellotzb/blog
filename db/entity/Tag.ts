@@ -32,7 +32,7 @@ export class Tag {
   @Column()
   article_count!: number;
 
-  // 一个标签可以关联多个用户，同时多个用户也可以关联多个标签，多对多
+  // 一个标签可以关联多个用户，同时一个用户也可以关联多个标签，多对多
   // 多对多的关系不能通过在一个表里设置外键，需要新建一张关联表，默认表名为tags_users_users
   @ManyToMany((type) => User, {
     cascade: true, // 为给定关系设置级联选项，true表示允许在数据库中插入或更新相关对象
@@ -47,9 +47,9 @@ export class Tag {
   })
   users!: User[];
 
-  // 一个标签可以关联多篇文章，同时多篇文章也可以关联多个标签，多对多
+  // 一个标签可以关联多篇文章，同时一篇文章也可以关联多个标签，多对多
   // 多对多的关系不能通过在一个表里设置外键，需要新建一张关联表，默认表名为tags_articles_articles
-  @ManyToMany((type) => Article)
+  @ManyToMany((type) => Article, (article) => article.tags)
   @JoinTable({
     joinColumn: {
       name: 'tag_id',

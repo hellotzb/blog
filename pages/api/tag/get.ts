@@ -32,7 +32,7 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
 
   res?.status(200)?.json({
     code: 0,
-    msg: '',
+    msg: '获取标签信息成功',
     data: {
       followTags,
       allTags,
