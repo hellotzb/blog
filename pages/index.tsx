@@ -84,11 +84,11 @@ const Home: NextPage<IProps> = (props) => {
       </div>
       <div className="content-layout">
         {showAricles?.map((article) => (
-          <>
-            {/* <ListItem article={article} /> */}
-            <DynamicComponent article={article} />
+          <div key={`home-article-${article.id}`}>
+            <ListItem article={article} />
+            {/* <DynamicComponent article={article} /> */}
             <Divider />
-          </>
+          </div>
         ))}
       </div>
     </div>
