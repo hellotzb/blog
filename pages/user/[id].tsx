@@ -12,6 +12,7 @@ import { User, Article } from 'db/entity';
 import styles from './index.module.scss';
 import { AppDataSource } from '@/db/data-source';
 
+// SSG渲染
 export async function getStaticPaths() {
   // user/[id]
   if (!AppDataSource.isInitialized) {
@@ -20,13 +21,13 @@ export async function getStaticPaths() {
   const users = await AppDataSource.getRepository(User).find();
   const userIds = users?.map((user) => ({ params: { id: String(user?.id) } }));
 
-  // [{params: 1}, {params: 2}, {params: 3}]
+  // https://nextjs.org/docs/api-reference/data-fetching/get-static-paths#getstaticpaths-return-values
   return {
     paths: userIds,
     fallback: 'blocking',
   };
 }
-
+// SSG渲染
 export async function getStaticProps({ params }: { params: any }) {
   const userId = params?.id;
   if (!AppDataSource.isInitialized) {
@@ -57,6 +58,7 @@ export async function getStaticProps({ params }: { params: any }) {
   };
 }
 
+// SSR渲染
 // export async function getServerSideProps({ params }: { params: any }) {
 //   const userId = params?.id;
 //   const db = await prepareConnection();

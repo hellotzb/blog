@@ -3,11 +3,11 @@ import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 import { AppDataSource } from '@/db/data-source';
 import { Article, Tag } from '@/db/entity';
-import ListItem from '@/components/ListItem';
 import { IArticle } from './api';
 import request from 'service/fetch';
 import { Divider } from 'antd';
 import classnames from 'classnames';
+import dynamic from 'next/dynamic';
 
 import styles from './index.module.scss';
 
@@ -47,6 +47,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
   };
 };
 
+const DynamicListItem = dynamic(() => import('@/components/ListItem'));
+
 const Home: NextPage<IProps> = (props) => {
   const { articles = [], tags = [] } = props;
   const [selectTag, setSelectTag] = useState(0);
@@ -85,8 +87,7 @@ const Home: NextPage<IProps> = (props) => {
       <div className="content-layout">
         {showAricles?.map((article) => (
           <div key={`home-article-${article.id}`}>
-            <ListItem article={article} />
-            {/* <DynamicComponent article={article} /> */}
+            <DynamicListItem article={article} />
             <Divider />
           </div>
         ))}
